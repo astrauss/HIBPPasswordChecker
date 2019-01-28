@@ -17,7 +17,7 @@ namespace HIBPSecurePassCheck
             string passWd = string.Empty;
             do
             {
-                Console.WriteLine("Please enter password to be securely checked against the Have I Been Pwned database: ");
+                Console.WriteLine("Please enter password to be securely checked against the Have I Been Pwned database (exit by entering 'ex'): ");
                 bool globalMatch = false;
                 bool match = false;
                 passWd = GetPwFromConsole();
