@@ -6,4 +6,6 @@ a request is sent to the Have I Been PWNED Web API. This returns a list of passw
 Then the console application locally checks if the full hash value is present in the result list letting you determine if the checked password
 is in the database and therefore has been compromised which would be a clear indicator to change this password asap if still in use.
 
+![Alt text](/HIBPPasswordChecker_screen.png?raw=true "Screenshot")
+
 This is a quick and dirty implementation so please bear with me for bugs, bad programming style and other flaws. Feedback welcome
