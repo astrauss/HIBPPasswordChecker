@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{07262D71-56FF-4828-AE83-67B642558F12}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>HIBPSha1Exa</RootNamespace>
-    <AssemblyName>HIBPSha1Exa</AssemblyName>
+    <RootNamespace>HIBPPasswordChecker</RootNamespace>
+    <AssemblyName>HIBPPasswordChecker</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

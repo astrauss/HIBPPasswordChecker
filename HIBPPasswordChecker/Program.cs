@@ -25,6 +25,8 @@ namespace HIBPSecurePassCheck
                 string hashResult = Hash(passWd);
                 string hashPrefix = hashResult.Substring(0, 5);
                 string[] hashesToCompare = SendHIBPRequest(hashPrefix);
+                string[] originalHashListResponse = new string[hashesToCompare.Length];
+                hashesToCompare.CopyTo(originalHashListResponse, 0);
                 hashesToCompare = ClearHashList(hashesToCompare);
                 int counter = 0;
                 Console.WriteLine(hashesToCompare.Length + " Hash values returned by HIBP");
@@ -33,7 +35,10 @@ namespace HIBPSecurePassCheck
                     match = (hashPrefix + hashVal).Equals(hashResult);
                     if (match)
                     {
+                        string hashOccur = originalHashListResponse[counter];
+                        string[] parts = hashOccur.Split(':');
                         Console.WriteLine("Match found at position " + counter + " - Please change PW!");
+                        Console.WriteLine("The database contains " + parts[1] + " occurrences of this PW");
                         globalMatch = true;
                     }
                     counter++;
@@ -80,7 +85,7 @@ namespace HIBPSecurePassCheck
 
         static string[] SendHIBPRequest(string hashFragment)
         {
-            Console.WriteLine("Sending Request to HIBP with Hash fragmen: " + hashFragment);
+            Console.WriteLine("Sending Request to HIBP with Hash fragment: " + hashFragment);
             Uri reqUri = new Uri("https://api.pwnedpasswords.com/range/" + hashFragment);
             Console.WriteLine("Request sent to HIBP is: " + reqUri.ToString());
             string[] hashListResponse = null;
