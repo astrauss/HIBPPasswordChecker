@@ -18,25 +18,23 @@ namespace HIBPSecurePassCheck
             do
             {
                 Console.WriteLine("Please enter password to be securely checked against the Have I Been Pwned database (exit by entering 'ex'): ");
-                bool globalMatch = false;
-                bool match = false;
+                bool globalMatch = false;                
                 passWd = GetPwFromConsole();
                 Console.WriteLine("Creating Hash value for the given password");
                 string hashResult = Hash(passWd);
+                //Getting rid of clear text password asap
+                passWd = string.Empty;
                 string hashPrefix = hashResult.Substring(0, 5);
+                //Create and populate an array with hash values returned by the HIBP service
                 string[] hashesToCompare = SendHIBPRequest(hashPrefix);
-                string[] originalHashListResponse = new string[hashesToCompare.Length];
-                hashesToCompare.CopyTo(originalHashListResponse, 0);
-                hashesToCompare = ClearHashList(hashesToCompare);
                 int counter = 0;
                 Console.WriteLine(hashesToCompare.Length + " Hash values returned by HIBP");
+                //Rebuild the complete hash values and compare it with our actual password hash
                 foreach (string hashVal in hashesToCompare)
-                {
-                    match = (hashPrefix + hashVal).Equals(hashResult);
-                    if (match)
-                    {
-                        string hashOccur = originalHashListResponse[counter];
-                        string[] parts = hashOccur.Split(':');
+                {                    
+                    string[] parts = hashVal.Split(':');                    
+                    if (hashResult.Equals((hashPrefix + parts[0])))
+                    {                       
                         Console.WriteLine("Match found at position " + counter + " - Please change PW!");
                         Console.WriteLine("The database contains " + parts[1] + " occurrences of this PW");
                         globalMatch = true;
@@ -50,25 +48,13 @@ namespace HIBPSecurePassCheck
                     Console.WriteLine("No match found - Lucky bastard. Nevertheless - Change your PW regularly\n");
                 }
                 Console.WriteLine("----------------------------------------");
+                
             } while (passWd != "ex");
         }
-
-        static string[] ClearHashList(string[] hashListFromResponse)
-        {
-            int length = hashListFromResponse.Length;
-            for(int i = 0; i < length; i++)
-            {
-                string hash = hashListFromResponse[i];
-                string clearedHash = hash.Remove(hash.IndexOf(":"));
-                hashListFromResponse[i] = clearedHash;
-            }
-
-            return hashListFromResponse;
-            
-        }
-
+        
         static string Hash(string input)
         {
+            //Create SHA-1 hash from password
             using (SHA1Managed sha1 = new SHA1Managed())
             {
                 var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(input));
@@ -85,6 +71,7 @@ namespace HIBPSecurePassCheck
 
         static string[] SendHIBPRequest(string hashFragment)
         {
+            //Contact the HIBP API using an HTTP GET appending the k anonymized hash fragment to the URL
             Console.WriteLine("Sending Request to HIBP with Hash fragment: " + hashFragment);
             Uri reqUri = new Uri("https://api.pwnedpasswords.com/range/" + hashFragment);
             Console.WriteLine("Request sent to HIBP is: " + reqUri.ToString());
@@ -97,7 +84,7 @@ namespace HIBPSecurePassCheck
                 Console.WriteLine("Response from Server: " +((HttpWebResponse)response).StatusDescription);
                 Stream dataStream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(dataStream);
-                  
+                //Read HIBP APIresponse and populate hash array
                 string responseFromServer = reader.ReadToEnd();
                 hashListResponse = responseFromServer.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 reader.Close();
@@ -112,6 +99,7 @@ namespace HIBPSecurePassCheck
 
         static string GetPwFromConsole()
         {
+            //Get password to check from conole replacing the chars typed with star characters
             string pass = "";
             do
             {
