@@ -15,11 +15,16 @@ namespace HIBPSecurePassCheck
         static void Main(string[] args)
         {
             string passWd = string.Empty;
+            bool exitFlag = false;
             do
             {
                 Console.WriteLine("Please enter password to be securely checked against the Have I Been Pwned database (exit by entering 'ex'): ");
                 bool globalMatch = false;                
                 passWd = GetPwFromConsole();
+                if(passWd == "ex")
+                {
+                    exitFlag = true;
+                }
                 Console.WriteLine("Creating Hash value for the given password");
                 string hashResult = Hash(passWd);
                 //Getting rid of clear text password asap
@@ -49,7 +54,7 @@ namespace HIBPSecurePassCheck
                 }
                 Console.WriteLine("----------------------------------------");
                 
-            } while (passWd != "ex");
+            } while (!exitFlag);
         }
         
         static string Hash(string input)
